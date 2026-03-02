@@ -1,41 +1,57 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
 import joblib
 import pandas as pd
+import os
+
+
+class CustomerData(BaseModel):
+    tenure: int
+    MonthlyCharges: float
+    TotalCharges: float
+    SeniorCitizen: int
+    Partner: str
+    Dependents: str
+    PhoneService: str
+    PaperlessBilling: str
+
 
 app = FastAPI(title="User Dropoff Risk API")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Load model once when API starts
 
-# load model
-model = joblib.load("../models/dropoff_model.pkl")
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+model_path = os.path.join(BASE_DIR, "models", "logreg_churn_v1.pkl")
+
+model = joblib.load(model_path)
 
 @app.get("/")
 def home():
-    return {"message": "API is running"}
-
-
-from pydantic import BaseModel
-
-class UserInput(BaseModel):
-    sessions: int
-    time_spent: int
+    return {"message": "User Dropoff Risk API is running"}
 
 @app.post("/predict")
-def predict_dropoff(user: UserInput):
-    data = [[user.sessions, user.time_spent]]
+def predict(data: CustomerData):
+    df = pd.DataFrame([data.dict()])
 
-    prediction = model.predict(data)[0]
-    probability = model.predict_proba(data)[0][1]
+    # ✅ apply same encoding as training
+    df_encoded = pd.get_dummies(df)
+
+    # ✅ align columns with model
+    model_features = model.feature_names_in_
+    df_encoded = df_encoded.reindex(columns=model_features, fill_value=0)
+
+    prediction = model.predict(df_encoded)[0]
+    probability = model.predict_proba(df_encoded)[0][1]
 
     return {
-        "dropoff_prediction": int(prediction),
-        "dropoff_probability": float(round(probability, 3))
+        "churn_prediction": int(prediction),
+        "churn_probability": float(probability)
+    }
+
+    return {
+        "churn_prediction": int(prediction),
+        "churn_probability": float(probability)
     }
