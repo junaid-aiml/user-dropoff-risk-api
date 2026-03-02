@@ -155,11 +155,9 @@ http://127.0.0.1:8000/docs
 
 ---
 
----
-
 ## Sample Prediction Request
 
-json
+```json
 {
   "tenure": 12,
   "MonthlyCharges": 70.5,
