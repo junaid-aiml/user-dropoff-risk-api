@@ -101,7 +101,7 @@ User Input → Frontend UI → FastAPI Backend → ML Model → Prediction → R
 
 ## Project Structure
 
-
+```text
 user-dropoff-risk-api/
 │
 ├── api/                         # FastAPI backend
