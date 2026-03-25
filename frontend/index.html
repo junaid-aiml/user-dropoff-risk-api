@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Customer Churn Predictor</title>
+  <title>Churn Predictor</title>
+
   <style>
     body {
-      font-family: Arial;
-      background: #f4f6f8;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #eef2f3, #dfe9f3);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
 
-    .card {
+    .container {
       background: white;
       padding: 30px;
       border-radius: 12px;
@@ -22,125 +24,189 @@
 
     h2 {
       text-align: center;
+      margin-bottom: 20px;
     }
 
-    input, select, button {
+    input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 10px;
+      margin: 8px 0;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
 
     button {
-      background: #007bff;
-      color: white;
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to right, #36d1dc, #5b86e5);
       border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
+      margin-top: 10px;
     }
 
     button:hover {
-      background: #0056b3;
+      opacity: 0.9;
     }
 
-    #result {
+    .result {
       margin-top: 15px;
-      font-weight: bold;
+      padding: 10px;
+      border-radius: 6px;
       text-align: center;
-    }
-
-    .low {
-      color: green;
+      font-weight: bold;
     }
 
     .high {
-      color: red;
+      background-color: #ffe5e5;
+      color: #d8000c;
     }
+
+    .low {
+      background-color: #e6ffed;
+      color: #007e33;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #5b86e5;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .bar-container {
+      width: 100%;
+      background: #eee;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 20px;
+      text-align: right;
+      color: white;
+      padding-right: 5px;
+      line-height: 20px;
+    }
+
   </style>
 </head>
 
 <body>
 
-<div class="card">
-  <h2>Churn Predictor</h2>
+<div class="container">
 
-  <input type="number" id="tenure" placeholder="Tenure">
-  <input type="number" id="monthly" placeholder="Monthly Charges">
-  <input type="number" id="total" placeholder="Total Charges">
+<h2>Churn Predictor</h2>
 
-  <select id="senior">
-    <option value="">Senior Citizen?</option>
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
+<input type="number" id="tenure" placeholder="Tenure">
+<input type="number" id="monthly" placeholder="Monthly Charges">
+<input type="number" id="total" placeholder="Total Charges">
 
-  <select id="partner">
-    <option value="">Partner?</option>
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
+<select id="senior">
+  <option value="0">Senior Citizen? (No)</option>
+  <option value="1">Senior Citizen? (Yes)</option>
+</select>
 
-  <select id="dependents">
-    <option value="">Dependents?</option>
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
+<select id="partner">
+  <option value="Yes">Partner? (Yes)</option>
+  <option value="No">Partner? (No)</option>
+</select>
 
-  <select id="phone">
-    <option value="">Phone Service?</option>
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
+<select id="dependents">
+  <option value="Yes">Dependents? (Yes)</option>
+  <option value="No">Dependents? (No)</option>
+</select>
 
-  <select id="paperless">
-    <option value="">Paperless Billing?</option>
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
+<select id="phone">
+  <option value="Yes">Phone Service? (Yes)</option>
+  <option value="No">Phone Service? (No)</option>
+</select>
 
-  <button onclick="predict()">Predict</button>
+<select id="paperless">
+  <option value="Yes">Paperless Billing? (Yes)</option>
+  <option value="No">Paperless Billing? (No)</option>
+</select>
 
-  <div id="result"></div>
+<button onclick="predict()">Predict</button>
+
+<div id="loading" style="display:none; text-align:center; margin-top:10px;">
+  <div class="spinner"></div>
+  <p>Predicting...</p>
+</div>
+
+<div id="result" class="result"></div>
+
+<div id="chart" style="margin-top:10px;"></div>
+
 </div>
 
 <script>
 async function predict() {
-  try {
-    const data = {
-      tenure: Number(document.getElementById("tenure").value),
-      MonthlyCharges: Number(document.getElementById("monthly").value),
-      TotalCharges: Number(document.getElementById("total").value),
-      SeniorCitizen: document.getElementById("senior").value === "Yes" ? 1 : 0,
-      Partner: document.getElementById("partner").value,
-      Dependents: document.getElementById("dependents").value,
-      PhoneService: document.getElementById("phone").value,
-      PaperlessBilling: document.getElementById("paperless").value
-    };
+  const data = {
+    tenure: Number(document.getElementById("tenure").value),
+    MonthlyCharges: Number(document.getElementById("monthly").value),
+    TotalCharges: Number(document.getElementById("total").value),
+    SeniorCitizen: Number(document.getElementById("senior").value),
+    Partner: document.getElementById("partner").value,
+    Dependents: document.getElementById("dependents").value,
+    PhoneService: document.getElementById("phone").value,
+    PaperlessBilling: document.getElementById("paperless").value
+  };
 
+  const resBox = document.getElementById("result");
+  const loading = document.getElementById("loading");
+  const chart = document.getElementById("chart");
+
+  loading.style.display = "block";
+  resBox.innerText = "";
+  chart.innerHTML = "";
+
+  try {
     const response = await fetch("https://user-dropoff-risk-api-1.onrender.com/predict", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(data)
     });
 
     const result = await response.json();
 
-    let riskClass = result.churn_prediction === 1 ? "high" : "low";
+    loading.style.display = "none";
 
-    document.getElementById("result").innerHTML =
-      `<span class="${riskClass}">
-        Prediction: ${result.churn_prediction} <br>
-        Probability: ${result.churn_probability.toFixed(2)}
-      </span>`;
+    const prob = (result.churn_probability * 100).toFixed(1);
+
+    if (result.churn_prediction === 1) {
+      resBox.className = "result high";
+      resBox.innerText = `⚠️ High Risk of Churn (${prob}%)`;
+    } else {
+      resBox.className = "result low";
+      resBox.innerText = `✅ Low Risk of Churn (${prob}%)`;
+    }
+
+    chart.innerHTML = `
+      <p style="margin-top:10px;">Churn Probability</p>
+      <div class="bar-container">
+        <div class="bar" style="width:${prob}%; background:${result.churn_prediction === 1 ? '#d8000c' : '#007e33'}">
+          ${prob}%
+        </div>
+      </div>
+    `;
 
   } catch (error) {
-    document.getElementById("result").innerText =
-      "Error: " + error.message;
+    loading.style.display = "none";
+    resBox.innerText = "Error: " + error.message;
   }
 }
 </script>
+
 </body>
 </html>
