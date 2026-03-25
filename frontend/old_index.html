@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dropoff Predictor</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 320px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Dropoff Predictor</h2>
+
+    <input type="number" id="sessions" placeholder="Sessions">
+    <input type="number" id="time_spent" placeholder="Time Spent">
+
+    <button onclick="predict()">Predict</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function predict() {
+    const sessions = document.getElementById("sessions").value;
+    const timeSpent = document.getElementById("time_spent").value;
+
+    const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            sessions: Number(sessions),
+            time_spent: Number(timeSpent)
+        })
+    });
+
+    const data = await response.json();
+
+    document.getElementById("result").innerText =
+        "Prediction: " + data.dropoff_prediction +
+        " | Probability: " + data.dropoff_probability;
+}
+</script>
+
+</body>
+</html>

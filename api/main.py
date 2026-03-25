@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
+from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import pandas as pd
 import os
@@ -19,6 +19,13 @@ class CustomerData(BaseModel):
 
 
 app = FastAPI(title="User Dropoff Risk API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Load model once when API starts
 
@@ -36,10 +43,10 @@ def home():
 def predict(data: CustomerData):
     df = pd.DataFrame([data.dict()])
 
-    # ✅ apply same encoding as training
+    #  apply same encoding as training
     df_encoded = pd.get_dummies(df)
 
-    # ✅ align columns with model
+    #  align columns with model
     model_features = model.feature_names_in_
     df_encoded = df_encoded.reindex(columns=model_features, fill_value=0)
 

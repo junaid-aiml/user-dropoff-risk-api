@@ -89,12 +89,13 @@ User Input → Frontend UI → FastAPI Backend → ML Model → Prediction → R
 
 ## Key Features
 
-✅ End-to-end ML pipeline  
-✅ Real-time prediction API  
-✅ Automatic feature alignment  
-✅ Production-style folder structure  
-✅ Feature importance visualization  
-✅ Ready for deployment  
+- End-to-end ML pipeline  
+- Real-time prediction API  
+- Automatic feature alignment  
+- Production-style folder structure  
+- Feature importance visualization  
+- Rest API built using FastApi
+- Deployed on cloud (Render) 
 
 ---
 
@@ -153,7 +154,11 @@ uvicorn api.main:app --reload
 
 http://127.0.0.1:8000/docs
 
+##  Live Demo
 
+ API Docs: https://user-dropoff-risk-api-1.onrender.com/docs
+
+You can test the API directly using the interactive Swagger UI.(Note: The API may take up to 30–50 seconds to respond on first request due to free-tier cold start.)
 
 ## Sample Prediction Request
 

@@ -1,85 +1,84 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html>
 <head>
-    <title>User Dropoff Predictor</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: #f4f6f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 320px;
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-        }
-
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        #result {
-            margin-top: 15px;
-            font-weight: bold;
-            text-align: center;
-        }
-    </style>
+  <title>User Dropoff Predictor</title>
 </head>
-<body>
+<body>  <h2>Customer Churn Prediction</h2><label>Tenure:</label>
+<input type="number" id="tenure"><br><br>
 
-<div class="card">
-    <h2>Dropoff Predictor</h2>
+<label>Monthly Charges:</label>
+<input type="number" id="monthly"><br><br>
 
-    <input type="number" id="sessions" placeholder="Sessions">
-    <input type="number" id="time_spent" placeholder="Time Spent">
+<label>Total Charges:</label>
+<input type="number" id="total"><br><br>
 
-    <button onclick="predict()">Predict</button>
+<select id="senior">
+  <option value="">Senior Citizen?</option>
+  <option value="No">No</option>
+  <option value="Yes">Yes</option>
+</select><br><br>
 
-    <div id="result"></div>
-</div>
+<select id="partner">
+  <option value="">Partner?</option>
+  <option value="Yes">Yes</option>
+  <option value="No">No</option>
+</select><br><br>
 
-<script>
+<select id="dependents">
+  <option value="">Dependents?</option>
+  <option value="Yes">Yes</option>
+  <option value="No">No</option>
+</select><br><br>
+
+<select id="phone">
+  <option value="">Phone Service?</option>
+  <option value="Yes">Yes</option>
+  <option value="No">No</option>
+</select><br><br>
+
+<select id="paperless">
+  <option value="">Paperless Billing?</option>
+  <option value="Yes">Yes</option>
+  <option value="No">No</option>
+</select><br><br>
+
+<button onclick="predict()">Predict</button>
+
+  <h3 id="result"></h3>
+  <script>
 async function predict() {
-    const sessions = document.getElementById("sessions").value;
-    const timeSpent = document.getElementById("time_spent").value;
+  try {
+    const data = {
+      tenure: Number(document.getElementById("tenure").value),
+      MonthlyCharges: Number(document.getElementById("monthly").value),
+      TotalCharges: Number(document.getElementById("total").value),
+      SeniorCitizen: Number(document.getElementById("senior").value),
+      Partner: document.getElementById("partner").value,
+      Dependents: document.getElementById("dependents").value,
+      PhoneService: document.getElementById("phone").value,
+      PaperlessBilling: document.getElementById("paperless").value
+    };
 
-    const response = await fetch("http://127.0.0.1:8000/predict", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            sessions: Number(sessions),
-            time_spent: Number(timeSpent)
-        })
+    const response = await fetch("https://user-dropoff-risk-api-1.onrender.com/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
     document.getElementById("result").innerText =
-        "Prediction: " + data.dropoff_prediction +
-        " | Probability: " + data.dropoff_probability;
+      "Prediction: " + result.churn_prediction +
+      " | Probability: " + result.churn_probability;
+
+  } catch (error) {
+    document.getElementById("result").innerText =
+      "Error: " + error.message;
+  }
 }
 </script>
+
 
 </body>
 </html>
