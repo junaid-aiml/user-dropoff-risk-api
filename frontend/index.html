@@ -1,57 +1,117 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <head>
-  <title>User Dropoff Predictor</title>
+  <title>Customer Churn Predictor</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .low {
+      color: green;
+    }
+
+    .high {
+      color: red;
+    }
+  </style>
 </head>
-<body>  <h2>Customer Churn Prediction</h2><label>Tenure:</label>
-<input type="number" id="tenure"><br><br>
 
-<label>Monthly Charges:</label>
-<input type="number" id="monthly"><br><br>
+<body>
 
-<label>Total Charges:</label>
-<input type="number" id="total"><br><br>
+<div class="card">
+  <h2>Churn Predictor</h2>
 
-<select id="senior">
-  <option value="">Senior Citizen?</option>
-  <option value="No">No</option>
-  <option value="Yes">Yes</option>
-</select><br><br>
+  <input type="number" id="tenure" placeholder="Tenure">
+  <input type="number" id="monthly" placeholder="Monthly Charges">
+  <input type="number" id="total" placeholder="Total Charges">
 
-<select id="partner">
-  <option value="">Partner?</option>
-  <option value="Yes">Yes</option>
-  <option value="No">No</option>
-</select><br><br>
+  <select id="senior">
+    <option value="">Senior Citizen?</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
 
-<select id="dependents">
-  <option value="">Dependents?</option>
-  <option value="Yes">Yes</option>
-  <option value="No">No</option>
-</select><br><br>
+  <select id="partner">
+    <option value="">Partner?</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
 
-<select id="phone">
-  <option value="">Phone Service?</option>
-  <option value="Yes">Yes</option>
-  <option value="No">No</option>
-</select><br><br>
+  <select id="dependents">
+    <option value="">Dependents?</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
 
-<select id="paperless">
-  <option value="">Paperless Billing?</option>
-  <option value="Yes">Yes</option>
-  <option value="No">No</option>
-</select><br><br>
+  <select id="phone">
+    <option value="">Phone Service?</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
 
-<button onclick="predict()">Predict</button>
+  <select id="paperless">
+    <option value="">Paperless Billing?</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
 
-  <h3 id="result"></h3>
-  <script>
+  <button onclick="predict()">Predict</button>
+
+  <div id="result"></div>
+</div>
+
+<script>
 async function predict() {
   try {
     const data = {
       tenure: Number(document.getElementById("tenure").value),
       MonthlyCharges: Number(document.getElementById("monthly").value),
       TotalCharges: Number(document.getElementById("total").value),
-      SeniorCitizen: Number(document.getElementById("senior").value),
+      SeniorCitizen: document.getElementById("senior").value === "Yes" ? 1 : 0,
       Partner: document.getElementById("partner").value,
       Dependents: document.getElementById("dependents").value,
       PhoneService: document.getElementById("phone").value,
@@ -68,9 +128,13 @@ async function predict() {
 
     const result = await response.json();
 
-    document.getElementById("result").innerText =
-      "Prediction: " + result.churn_prediction +
-      " | Probability: " + result.churn_probability;
+    let riskClass = result.churn_prediction === 1 ? "high" : "low";
+
+    document.getElementById("result").innerHTML =
+      `<span class="${riskClass}">
+        Prediction: ${result.churn_prediction} <br>
+        Probability: ${result.churn_probability.toFixed(2)}
+      </span>`;
 
   } catch (error) {
     document.getElementById("result").innerText =
@@ -78,7 +142,5 @@ async function predict() {
   }
 }
 </script>
-
-
 </body>
 </html>

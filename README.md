@@ -156,7 +156,9 @@ http://127.0.0.1:8000/docs
 
 ##  Live Demo
 
- API Docs: https://user-dropoff-risk-api-1.onrender.com/docs
+Frontend (User Interface): https://velvety-gaufre-75945c.netlify.app
+
+Backend API (FastAPI Swaggwer Docs): https://user-dropoff-risk-api-1.onrender.com/docs
 
 You can test the API directly using the interactive Swagger UI.(Note: The API may take up to 30–50 seconds to respond on first request due to free-tier cold start.)
 
