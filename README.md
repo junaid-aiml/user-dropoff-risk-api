@@ -122,6 +122,7 @@ user-dropoff-risk-api/
 ├── requirements.txt             # Project dependencies
 └── README.md                    # Project documentation
 
+```
 ---
 
 ## How to Run Locally
